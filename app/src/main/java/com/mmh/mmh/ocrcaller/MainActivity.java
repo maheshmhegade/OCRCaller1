@@ -1,6 +1,9 @@
 package com.mmh.mmh.ocrcaller;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.net.Uri;
@@ -13,16 +16,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private Uri fileUri;
+    private ImageView image;
+    private TextView tessResults;
+
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1003;
     public static MainActivity ActivityContext =null;
@@ -36,9 +47,10 @@ public class MainActivity extends ActionBarActivity {
         ActivityContext = this;
 
         Button buttonCameraOn = (Button)findViewById(R.id.onCamera);
-        output = (TextView)findViewById(R.id.results);
+        tessResults = (TextView)findViewById(R.id.results);
+        image = (ImageView)findViewById(R.id.image);
 
-        buttonCameraOn.setOnClickListener(new Button.OnClickListener() {
+                buttonCameraOn.setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -50,6 +62,9 @@ public class MainActivity extends ActionBarActivity {
                 // create a file to save the video
                 fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
 
+                Log.d("saved to", fileUri.toString());
+                // set the image file name
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
                 // set the video image quality to high
                 intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
@@ -117,9 +132,6 @@ public class MainActivity extends ActionBarActivity {
         // Create a media file name
 
         // For unique file name appending current timeStamp with file name
-        java.util.Date date= new java.util.Date();
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-                .format(date.getTime());
 
         File mediaFile;
 
@@ -127,7 +139,7 @@ public class MainActivity extends ActionBarActivity {
 
             // For unique video file name appending current timeStamp with file name
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG"+ timeStamp + ".png");
+                    "IMG_tmp" + ".png");
 
         } else {
             return null;
@@ -143,16 +155,21 @@ public class MainActivity extends ActionBarActivity {
 
         if (requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
 
+            String filePathDir = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_PICTURES
+                    + File.separator +"MyCameraVideo/";
             if (resultCode == RESULT_OK) {
+                Bitmap bmp = BitmapFactory.decodeFile(filePathDir + "IMG_tmp.png");
 
+                image.setImageBitmap(bmp);
+                TessBaseAPI baseApi = new TessBaseAPI();
+                baseApi.init(filePathDir, "");
+                baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_LINE);
+                baseApi.setImage(bmp);
+                String outputText = baseApi.getUTF8Text();
+                tessResults.setText(outputText);
 
             } else if (resultCode == RESULT_CANCELED) {
 
-                output.setText("User cancelled the video capture.");
-
-                // User cancelled the video capture
-                Toast.makeText(this, "User cancelled the video capture.",
-                        Toast.LENGTH_LONG).show();
 
             } else {
 

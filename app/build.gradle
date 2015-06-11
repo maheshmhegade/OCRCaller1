@@ -17,6 +17,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+        x86 {
+            ndk {
+                abiFilter "x86"
+            }
+        }
+        arm {
+            ndk {
+                abiFilters "armeabi-v7a", "armeabi"
+            }
+        }
+
+    }
+}
+
+task copyNativeLibs(type: Copy) {
+    from(new File(getProjectDir(), 'src/main/native-libs')) { include '**/*.so' }
+    into new File(buildDir, 'native-libs')
 }
 
 dependencies {
