@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OCRCaller</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello">Start Video</string>
+    <string name="on_camera">Start Camera</string>
+    <string name="search_results">Scanned Number</string>
+</resources>
