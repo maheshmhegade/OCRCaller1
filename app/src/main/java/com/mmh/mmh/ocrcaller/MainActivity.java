@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Uri fileUri;
     public static final int MEDIA_TYPE_VIDEO = 2;
-    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1003;
     public static MainActivity ActivityContext =null;
     public static TextView output;
 
@@ -50,9 +50,6 @@ public class MainActivity extends ActionBarActivity {
                 // create a file to save the video
                 fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
 
-                Log.d("saved to", fileUri.toString());
-                // set the image file name
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
                 // set the video image quality to high
                 intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
@@ -148,11 +145,6 @@ public class MainActivity extends ActionBarActivity {
 
             if (resultCode == RESULT_OK) {
 
-                output.setText("Video File : " +data.getData());
-
-                // Video captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Video saved to: " +
-                        data.getData(), Toast.LENGTH_LONG).show();
 
             } else if (resultCode == RESULT_CANCELED) {
 
